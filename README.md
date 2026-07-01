@@ -69,3 +69,11 @@ npm run typecheck
 npm test
 npm run build
 ```
+
+## Deploy lên Vercel
+
+1. Đặt **Root Directory** là thư mục chứa `package.json` (thường là repository root).
+2. Chọn Node.js 20.x. Repository đã khóa `node` và `npm` trong `package.json`.
+3. Install Command: `npm ci --ignore-scripts --no-audit --no-fund`. Prisma Client sẽ được tạo ở bước build.
+4. Thêm tối thiểu các biến môi trường `DATABASE_URL`, `USEAPI_WEBHOOK_SECRET`, `S3_BUCKET` trước khi dùng API động.
+5. Các biến useapi.net, Redis, S3 và Stripe chỉ được cấu hình ở Vercel Environment Variables, không commit vào Git.
