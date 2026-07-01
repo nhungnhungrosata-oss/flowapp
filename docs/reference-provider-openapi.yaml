@@ -1,0 +1,1363 @@
+openapi: 3.1.0
+info:
+  title: useapi.net Google Flow API v1 – Integration Starter
+  version: 2026-06-derived
+  description: Bản OpenAPI khởi đầu được diễn giải từ tài liệu công khai. Hãy đối chiếu tài liệu chính thức trước
+    khi triển khai production.
+servers:
+- url: https://api.useapi.net/v1/google-flow
+security:
+- bearerAuth: []
+tags:
+- name: accounts
+- name: captcha
+- name: assets
+- name: images
+- name: videos
+- name: voices
+- name: characters
+- name: jobs
+paths:
+  /accounts:
+    post:
+      tags:
+      - accounts
+      summary: Cấu hình tài khoản Google Flow
+      operationId: post_accounts
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/post-google-flow-accounts
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cookies:
+                  type: string
+                  description: Bảng cookies lấy theo hướng dẫn thiết lập chính thức. Chỉ gửi từ môi trường backend
+                    an toàn.
+              additionalProperties: true
+              required:
+              - cookies
+    get:
+      tags:
+      - accounts
+      summary: Liệt kê tài khoản đã cấu hình
+      operationId: get_accounts
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+  /accounts/{email}:
+    get:
+      tags:
+      - accounts
+      summary: Xem một cấu hình tài khoản
+      operationId: get_accounts_email
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-email
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      parameters:
+      - name: email
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Địa chỉ email, cần URL-encode
+    delete:
+      tags:
+      - accounts
+      summary: Xóa cấu hình tài khoản
+      operationId: delete_accounts_email
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/delete-google-flow-accounts-email
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      parameters:
+      - name: email
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Địa chỉ email, cần URL-encode
+  /accounts/captcha-providers:
+    post:
+      tags:
+      - captcha
+      summary: Cấu hình nhà cung cấp captcha
+      operationId: post_accounts_captcha_providers
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/post-google-flow-accounts-captcha-providers
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                CapSolver:
+                  type: string
+                  description: API key
+                AntiCaptcha:
+                  type: string
+                  description: API key
+                YesCaptcha:
+                  type: string
+                  description: API key
+                SolveCaptcha:
+                  type: string
+                  description: API key
+                2Captcha:
+                  type: string
+                  description: API key
+                EzCaptcha:
+                  type: string
+                  description: API key
+              additionalProperties: true
+    get:
+      tags:
+      - captcha
+      summary: Xem captcha providers đã cấu hình
+      operationId: get_accounts_captcha_providers
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-captcha-providers
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+  /accounts/captcha-stats:
+    get:
+      tags:
+      - captcha
+      summary: Thống kê hiệu quả captcha
+      operationId: get_accounts_captcha_stats
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-captcha-stats
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      parameters:
+      - name: date
+        in: query
+        required: false
+        schema:
+          type: string
+        description: YYYY-MM-DD
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Tối đa 50000
+      - name: provider
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Tên provider
+      - name: anonymized
+        in: query
+        required: false
+        schema:
+          type: boolean
+        description: Tổng hợp ẩn danh toàn hệ thống
+  /assets:
+    post:
+      tags:
+      - assets
+      summary: Tải ảnh/video làm tài sản tham chiếu
+      operationId: post_assets
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/post-google-flow-assets-email
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      requestBody:
+        required: true
+        content:
+          image/png:
+            schema:
+              type: string
+              format: binary
+          image/jpeg:
+            schema:
+              type: string
+              format: binary
+          image/webp:
+            schema:
+              type: string
+              format: binary
+          video/mp4:
+            schema:
+              type: string
+              format: binary
+  /assets/{email}:
+    post:
+      tags:
+      - assets
+      summary: Tải ảnh/video làm tài sản tham chiếu
+      operationId: post_assets_email
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/post-google-flow-assets-email
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      parameters:
+      - name: email
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Tài khoản sở hữu asset; tài liệu mô tả có thể bỏ qua khi hệ thống tự chọn
+      requestBody:
+        required: true
+        content:
+          image/png:
+            schema:
+              type: string
+              format: binary
+          image/jpeg:
+            schema:
+              type: string
+              format: binary
+          image/webp:
+            schema:
+              type: string
+              format: binary
+          video/mp4:
+            schema:
+              type: string
+              format: binary
+  /assets/{mediaGenerationId}:
+    get:
+      tags:
+      - assets
+      summary: Lấy URL tải asset
+      operationId: get_assets_mediaGenerationId
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/get-google-flow-assets-mediagenerationid
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      parameters:
+      - name: mediaGenerationId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: ID asset, cần URL-encode
+  /images:
+    post:
+      tags:
+      - images
+      summary: Tạo ảnh
+      operationId: post_images
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/post-google-flow-images
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prompt:
+                  type: string
+                  description: Mô tả ảnh
+                model:
+                  type: string
+                  description: imagen-4 | nano-banana-2 | nano-banana-pro
+                aspectRatio:
+                  type: string
+                  description: 16:9 | 4:3 | 1:1 | 3:4 | 9:16 | auto
+                count:
+                  type: integer
+                  description: 1-4
+                seed:
+                  type: integer
+                  description: Số nguyên >= 0
+                email:
+                  type: string
+                  description: Tài khoản; có thể để hệ thống cân bằng tải
+                replyUrl:
+                  type: string
+                  description: Webhook
+                replyRef:
+                  type: string
+                  description: Mã đối chiếu
+              additionalProperties: true
+              required:
+              - prompt
+  /images/upscale:
+    post:
+      tags:
+      - images
+      summary: Nâng độ phân giải ảnh
+      operationId: post_images_upscale
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/post-google-flow-images-upscale
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mediaGenerationId:
+                  type: string
+                  description: ID ảnh
+                resolution:
+                  type: string
+                  description: 2k | 4k
+              additionalProperties: true
+              required:
+              - mediaGenerationId
+  /videos:
+    post:
+      tags:
+      - videos
+      summary: Tạo hoặc chỉnh sửa video
+      operationId: post_videos
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prompt:
+                  type: string
+                  description: Mô tả chuyển động/nội dung
+                model:
+                  type: string
+                  description: veo-3.1-quality | veo-3.1-fast | veo-3.1-lite | veo-3.1-lite-low-priority | omni-flash
+                aspectRatio:
+                  type: string
+                  description: landscape | portrait; Veo còn hỗ trợ 1:1, 4:3, 3:4
+                duration:
+                  type: integer
+                  description: 4 | 6 | 8 | 10 tùy model/mode
+                count:
+                  type: integer
+                  description: 1-4
+                seed:
+                  type: integer
+                  description: Số nguyên >= 0
+                email:
+                  type: string
+                  description: Tài khoản hoặc tự cân bằng
+                startImage:
+                  type: string
+                  description: Ảnh đầu cho I2V
+                endImage:
+                  type: string
+                  description: Ảnh cuối, cần startImage
+                referenceVideo_1:
+                  type: string
+                  description: Omni Flash V2V
+                async:
+                  type: boolean
+                  description: true để trả job ngay
+                replyUrl:
+                  type: string
+                  description: Webhook trạng thái
+                replyRef:
+                  type: string
+                  description: Mã đối chiếu
+              additionalProperties: true
+              required:
+              - prompt
+  /videos/upscale:
+    post:
+      tags:
+      - videos
+      summary: Nâng độ phân giải video
+      operationId: post_videos_upscale
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-upscale
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mediaGenerationId:
+                  type: string
+                  description: ID video
+                resolution:
+                  type: string
+                  description: 1080p | 4K
+                async:
+                  type: boolean
+                  description: Chế độ job
+                replyUrl:
+                  type: string
+                  description: Webhook
+                replyRef:
+                  type: string
+                  description: Mã đối chiếu
+              additionalProperties: true
+              required:
+              - mediaGenerationId
+  /videos/gif:
+    post:
+      tags:
+      - videos
+      summary: Tạo GIF từ video
+      operationId: post_videos_gif
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-gif
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mediaGenerationId:
+                  type: string
+                  description: ID video
+              additionalProperties: true
+              required:
+              - mediaGenerationId
+  /videos/extend:
+    post:
+      tags:
+      - videos
+      summary: Mở rộng video Veo
+      operationId: post_videos_extend
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-extend
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mediaGenerationId:
+                  type: string
+                  description: ID video Veo
+                prompt:
+                  type: string
+                  description: Mô tả phần tiếp theo
+                model:
+                  type: string
+                  description: Veo 3.1 model
+                count:
+                  type: integer
+                  description: 1-4
+                seed:
+                  type: integer
+                  description: Seed
+                async:
+                  type: boolean
+                  description: Chế độ job
+                replyUrl:
+                  type: string
+                  description: Webhook
+                replyRef:
+                  type: string
+                  description: Mã đối chiếu
+              additionalProperties: true
+              required:
+              - mediaGenerationId
+              - prompt
+  /videos/concatenate:
+    post:
+      tags:
+      - videos
+      summary: Ghép video
+      operationId: post_videos_concatenate
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-concatenate
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                media:
+                  type: array
+                  description: '2-10 phần tử: mediaGenerationId, trimStart, trimEnd'
+                  items:
+                    type: object
+                    additionalProperties: true
+              additionalProperties: true
+              required:
+              - media
+  /voices:
+    post:
+      tags:
+      - voices
+      summary: Tạo custom voice
+      operationId: post_voices
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/post-google-flow-voices
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Tài khoản
+                voice:
+                  type: string
+                  description: Tên system voice làm giọng gốc
+                displayName:
+                  type: string
+                  description: Tên hiển thị
+                dialog:
+                  type: string
+                  description: Lời mẫu 1-120 ký tự
+                voicePerformance:
+                  type: string
+                  description: Phong cách thể hiện 1-120 ký tự
+              additionalProperties: true
+              required:
+              - email
+              - voice
+              - displayName
+              - dialog
+              - voicePerformance
+    get:
+      tags:
+      - voices
+      summary: Liệt kê voices
+      operationId: get_voices
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/get-google-flow-voices
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      parameters:
+      - name: email
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Tài khoản
+      - name: source
+        in: query
+        required: false
+        schema:
+          type: string
+        description: system | user
+  /voices/{ref}:
+    get:
+      tags:
+      - voices
+      summary: Xem voice và URL nghe thử
+      operationId: get_voices_ref
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/get-google-flow-voices-ref
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      parameters:
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Voice reference hoặc system voice, URL-encode
+    delete:
+      tags:
+      - voices
+      summary: Xóa custom voice
+      operationId: delete_voices_ref
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/delete-google-flow-voices-ref
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      parameters:
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Custom voice reference, URL-encode
+  /characters:
+    post:
+      tags:
+      - characters
+      summary: Tạo character tái sử dụng
+      operationId: post_characters
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/post-google-flow-characters
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                displayName:
+                  type: string
+                  description: Tên hiển thị 1-200 ký tự
+                imageReference_1:
+                  type: string
+                  description: Ảnh tham chiếu bắt buộc
+                imageReference_2:
+                  type: string
+                  description: Ảnh thứ hai
+                personalityNotes:
+                  type: string
+                  description: Ghi chú 0-2000 ký tự
+                voice:
+                  type: string
+                  description: System voice hoặc custom voice ref
+              additionalProperties: true
+              required:
+              - displayName
+              - imageReference_1
+    get:
+      tags:
+      - characters
+      summary: Liệt kê characters
+      operationId: get_characters
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/get-google-flow-characters
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      parameters:
+      - name: email
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Tài khoản
+  /characters/{ref}:
+    get:
+      tags:
+      - characters
+      summary: Xem character, preview và voice
+      operationId: get_characters_ref
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/get-google-flow-characters-ref
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      parameters:
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Character reference, URL-encode
+    delete:
+      tags:
+      - characters
+      summary: Xóa character
+      operationId: delete_characters_ref
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/delete-google-flow-characters-ref
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      parameters:
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Character reference, URL-encode
+  /jobs:
+    get:
+      tags:
+      - jobs
+      summary: Thống kê tải và tình trạng jobs
+      operationId: get_jobs
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/get-google-flow-jobs
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      parameters:
+      - name: options
+        in: query
+        required: false
+        schema:
+          type: string
+        description: summary | executing | history
+  /jobs/{jobId}:
+    get:
+      tags:
+      - jobs
+      summary: Lấy trạng thái job
+      operationId: get_jobs_jobId
+      externalDocs:
+        url: https://useapi.net/docs/api-google-flow-v1/get-google-flow-jobs-jobid
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '201':
+          description: Job đã được tạo (khi endpoint hỗ trợ async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexibleResponse'
+        '400':
+          description: Yêu cầu không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Token không hợp lệ
+        '429':
+          description: Giới hạn hoặc quota từ dịch vụ nền
+        '500':
+          description: Lỗi máy chủ
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Job ID, URL-encode
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    FlexibleResponse:
+      type: object
+      additionalProperties: true
+    Error:
+      type: object
+      additionalProperties: true
+    JobRequestOptions:
+      type: object
+      properties:
+        async:
+          type: boolean
+          default: false
+        replyUrl:
+          type: string
+          format: uri
+        replyRef:
+          type: string

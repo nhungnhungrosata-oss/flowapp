@@ -1,0 +1,830 @@
+{
+  "name": "useapi.net Google Flow API v1 – endpoint catalog",
+  "base_url": "https://api.useapi.net/v1/google-flow",
+  "auth": {
+    "type": "bearer",
+    "header": "Authorization: Bearer <API_TOKEN>",
+    "note": "Dùng toàn bộ token, gồm cả tiền tố user: nếu token có tiền tố đó."
+  },
+  "operation_count": 26,
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/accounts",
+      "group": "accounts",
+      "title": "Cấu hình tài khoản Google Flow",
+      "fields": [
+        [
+          "cookies",
+          "string",
+          true,
+          "Bảng cookies lấy theo hướng dẫn thiết lập chính thức. Chỉ gửi từ môi trường backend an toàn."
+        ]
+      ],
+      "source": "post-google-flow-accounts",
+      "path_params": [],
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/post-google-flow-accounts"
+    },
+    {
+      "method": "GET",
+      "path": "/accounts",
+      "group": "accounts",
+      "title": "Liệt kê tài khoản đã cấu hình",
+      "fields": [],
+      "source": "get-google-flow-accounts",
+      "path_params": [],
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts"
+    },
+    {
+      "method": "GET",
+      "path": "/accounts/{email}",
+      "group": "accounts",
+      "title": "Xem một cấu hình tài khoản",
+      "path_params": [
+        [
+          "email",
+          "Địa chỉ email, cần URL-encode"
+        ]
+      ],
+      "fields": [],
+      "source": "get-google-flow-accounts-email",
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-email"
+    },
+    {
+      "method": "DELETE",
+      "path": "/accounts/{email}",
+      "group": "accounts",
+      "title": "Xóa cấu hình tài khoản",
+      "path_params": [
+        [
+          "email",
+          "Địa chỉ email, cần URL-encode"
+        ]
+      ],
+      "fields": [],
+      "source": "delete-google-flow-accounts-email",
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/delete-google-flow-accounts-email"
+    },
+    {
+      "method": "POST",
+      "path": "/accounts/captcha-providers",
+      "group": "captcha",
+      "title": "Cấu hình nhà cung cấp captcha",
+      "fields": [
+        [
+          "CapSolver",
+          "string",
+          false,
+          "API key"
+        ],
+        [
+          "AntiCaptcha",
+          "string",
+          false,
+          "API key"
+        ],
+        [
+          "YesCaptcha",
+          "string",
+          false,
+          "API key"
+        ],
+        [
+          "SolveCaptcha",
+          "string",
+          false,
+          "API key"
+        ],
+        [
+          "2Captcha",
+          "string",
+          false,
+          "API key"
+        ],
+        [
+          "EzCaptcha",
+          "string",
+          false,
+          "API key"
+        ]
+      ],
+      "source": "post-google-flow-accounts-captcha-providers",
+      "path_params": [],
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/post-google-flow-accounts-captcha-providers"
+    },
+    {
+      "method": "GET",
+      "path": "/accounts/captcha-providers",
+      "group": "captcha",
+      "title": "Xem captcha providers đã cấu hình",
+      "fields": [],
+      "source": "get-google-flow-accounts-captcha-providers",
+      "path_params": [],
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-captcha-providers"
+    },
+    {
+      "method": "GET",
+      "path": "/accounts/captcha-stats",
+      "group": "captcha",
+      "title": "Thống kê hiệu quả captcha",
+      "query": [
+        [
+          "date",
+          "string",
+          false,
+          "YYYY-MM-DD"
+        ],
+        [
+          "limit",
+          "integer",
+          false,
+          "Tối đa 50000"
+        ],
+        [
+          "provider",
+          "string",
+          false,
+          "Tên provider"
+        ],
+        [
+          "anonymized",
+          "boolean",
+          false,
+          "Tổng hợp ẩn danh toàn hệ thống"
+        ]
+      ],
+      "fields": [],
+      "source": "get-google-flow-accounts-captcha-stats",
+      "path_params": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-captcha-stats"
+    },
+    {
+      "method": "POST",
+      "path": "/assets/{email}",
+      "group": "assets",
+      "title": "Tải ảnh/video làm tài sản tham chiếu",
+      "path_params": [
+        [
+          "email",
+          "Tài khoản sở hữu asset; tài liệu mô tả có thể bỏ qua khi hệ thống tự chọn"
+        ]
+      ],
+      "content_type": "binary",
+      "fields": [],
+      "source": "post-google-flow-assets-email",
+      "query": [],
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/post-google-flow-assets-email"
+    },
+    {
+      "method": "GET",
+      "path": "/assets/{mediaGenerationId}",
+      "group": "assets",
+      "title": "Lấy URL tải asset",
+      "path_params": [
+        [
+          "mediaGenerationId",
+          "ID asset, cần URL-encode"
+        ]
+      ],
+      "fields": [],
+      "source": "get-google-flow-assets-mediagenerationid",
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/get-google-flow-assets-mediagenerationid"
+    },
+    {
+      "method": "POST",
+      "path": "/images",
+      "group": "images",
+      "title": "Tạo ảnh",
+      "fields": [
+        [
+          "prompt",
+          "string",
+          true,
+          "Mô tả ảnh"
+        ],
+        [
+          "model",
+          "string",
+          false,
+          "imagen-4 | nano-banana-2 | nano-banana-pro"
+        ],
+        [
+          "aspectRatio",
+          "string",
+          false,
+          "16:9 | 4:3 | 1:1 | 3:4 | 9:16 | auto"
+        ],
+        [
+          "count",
+          "integer",
+          false,
+          "1-4"
+        ],
+        [
+          "seed",
+          "integer",
+          false,
+          "Số nguyên >= 0"
+        ],
+        [
+          "email",
+          "string",
+          false,
+          "Tài khoản; có thể để hệ thống cân bằng tải"
+        ],
+        [
+          "reference_1..10",
+          "string",
+          false,
+          "mediaGenerationId ảnh tham chiếu"
+        ],
+        [
+          "character_1..7",
+          "string",
+          false,
+          "Character reference"
+        ],
+        [
+          "replyUrl",
+          "string",
+          false,
+          "Webhook"
+        ],
+        [
+          "replyRef",
+          "string",
+          false,
+          "Mã đối chiếu"
+        ],
+        [
+          "captchaToken/captchaRetry/captchaOrder",
+          "mixed",
+          false,
+          "Tùy chọn captcha, dùng theo tài liệu"
+        ]
+      ],
+      "source": "post-google-flow-images",
+      "path_params": [],
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/post-google-flow-images"
+    },
+    {
+      "method": "POST",
+      "path": "/images/upscale",
+      "group": "images",
+      "title": "Nâng độ phân giải ảnh",
+      "fields": [
+        [
+          "mediaGenerationId",
+          "string",
+          true,
+          "ID ảnh"
+        ],
+        [
+          "resolution",
+          "string",
+          false,
+          "2k | 4k"
+        ],
+        [
+          "captchaToken/captchaRetry/captchaOrder",
+          "mixed",
+          false,
+          "Tùy chọn captcha"
+        ]
+      ],
+      "source": "post-google-flow-images-upscale",
+      "path_params": [],
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/post-google-flow-images-upscale"
+    },
+    {
+      "method": "POST",
+      "path": "/videos",
+      "group": "videos",
+      "title": "Tạo hoặc chỉnh sửa video",
+      "fields": [
+        [
+          "prompt",
+          "string",
+          true,
+          "Mô tả chuyển động/nội dung"
+        ],
+        [
+          "model",
+          "string",
+          false,
+          "veo-3.1-quality | veo-3.1-fast | veo-3.1-lite | veo-3.1-lite-low-priority | omni-flash"
+        ],
+        [
+          "aspectRatio",
+          "string",
+          false,
+          "landscape | portrait; Veo còn hỗ trợ 1:1, 4:3, 3:4"
+        ],
+        [
+          "duration",
+          "integer",
+          false,
+          "4 | 6 | 8 | 10 tùy model/mode"
+        ],
+        [
+          "count",
+          "integer",
+          false,
+          "1-4"
+        ],
+        [
+          "seed",
+          "integer",
+          false,
+          "Số nguyên >= 0"
+        ],
+        [
+          "email",
+          "string",
+          false,
+          "Tài khoản hoặc tự cân bằng"
+        ],
+        [
+          "startImage",
+          "string",
+          false,
+          "Ảnh đầu cho I2V"
+        ],
+        [
+          "endImage",
+          "string",
+          false,
+          "Ảnh cuối, cần startImage"
+        ],
+        [
+          "referenceImage_1..7",
+          "string",
+          false,
+          "Ảnh tham chiếu; giới hạn tùy model"
+        ],
+        [
+          "character_1..7",
+          "string",
+          false,
+          "Character reference"
+        ],
+        [
+          "referenceAudio_1..5",
+          "string",
+          false,
+          "Tên system voice hoặc custom voice ref"
+        ],
+        [
+          "referenceVideo_1",
+          "string",
+          false,
+          "Omni Flash V2V"
+        ],
+        [
+          "startFrameIndex_1/endFrameIndex_1",
+          "integer",
+          false,
+          "Cắt V2V theo timeline 24fps"
+        ],
+        [
+          "async",
+          "boolean",
+          false,
+          "true để trả job ngay"
+        ],
+        [
+          "replyUrl",
+          "string",
+          false,
+          "Webhook trạng thái"
+        ],
+        [
+          "replyRef",
+          "string",
+          false,
+          "Mã đối chiếu"
+        ],
+        [
+          "captchaToken/captchaRetry/captchaOrder",
+          "mixed",
+          false,
+          "Tùy chọn captcha"
+        ]
+      ],
+      "source": "post-google-flow-videos",
+      "path_params": [],
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos"
+    },
+    {
+      "method": "POST",
+      "path": "/videos/upscale",
+      "group": "videos",
+      "title": "Nâng độ phân giải video",
+      "fields": [
+        [
+          "mediaGenerationId",
+          "string",
+          true,
+          "ID video"
+        ],
+        [
+          "resolution",
+          "string",
+          false,
+          "1080p | 4K"
+        ],
+        [
+          "async",
+          "boolean",
+          false,
+          "Chế độ job"
+        ],
+        [
+          "replyUrl",
+          "string",
+          false,
+          "Webhook"
+        ],
+        [
+          "replyRef",
+          "string",
+          false,
+          "Mã đối chiếu"
+        ]
+      ],
+      "source": "post-google-flow-videos-upscale",
+      "path_params": [],
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-upscale"
+    },
+    {
+      "method": "POST",
+      "path": "/videos/gif",
+      "group": "videos",
+      "title": "Tạo GIF từ video",
+      "fields": [
+        [
+          "mediaGenerationId",
+          "string",
+          true,
+          "ID video"
+        ]
+      ],
+      "source": "post-google-flow-videos-gif",
+      "path_params": [],
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-gif"
+    },
+    {
+      "method": "POST",
+      "path": "/videos/extend",
+      "group": "videos",
+      "title": "Mở rộng video Veo",
+      "fields": [
+        [
+          "mediaGenerationId",
+          "string",
+          true,
+          "ID video Veo"
+        ],
+        [
+          "prompt",
+          "string",
+          true,
+          "Mô tả phần tiếp theo"
+        ],
+        [
+          "model",
+          "string",
+          false,
+          "Veo 3.1 model"
+        ],
+        [
+          "count",
+          "integer",
+          false,
+          "1-4"
+        ],
+        [
+          "seed",
+          "integer",
+          false,
+          "Seed"
+        ],
+        [
+          "async",
+          "boolean",
+          false,
+          "Chế độ job"
+        ],
+        [
+          "replyUrl",
+          "string",
+          false,
+          "Webhook"
+        ],
+        [
+          "replyRef",
+          "string",
+          false,
+          "Mã đối chiếu"
+        ]
+      ],
+      "source": "post-google-flow-videos-extend",
+      "path_params": [],
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-extend"
+    },
+    {
+      "method": "POST",
+      "path": "/videos/concatenate",
+      "group": "videos",
+      "title": "Ghép video",
+      "fields": [
+        [
+          "media",
+          "array",
+          true,
+          "2-10 phần tử: mediaGenerationId, trimStart, trimEnd"
+        ]
+      ],
+      "source": "post-google-flow-videos-concatenate",
+      "path_params": [],
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-concatenate"
+    },
+    {
+      "method": "POST",
+      "path": "/voices",
+      "group": "voices",
+      "title": "Tạo custom voice",
+      "fields": [
+        [
+          "email",
+          "string",
+          true,
+          "Tài khoản"
+        ],
+        [
+          "voice",
+          "string",
+          true,
+          "Tên system voice làm giọng gốc"
+        ],
+        [
+          "displayName",
+          "string",
+          true,
+          "Tên hiển thị"
+        ],
+        [
+          "dialog",
+          "string",
+          true,
+          "Lời mẫu 1-120 ký tự"
+        ],
+        [
+          "voicePerformance",
+          "string",
+          true,
+          "Phong cách thể hiện 1-120 ký tự"
+        ]
+      ],
+      "source": "post-google-flow-voices",
+      "path_params": [],
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/post-google-flow-voices"
+    },
+    {
+      "method": "GET",
+      "path": "/voices",
+      "group": "voices",
+      "title": "Liệt kê voices",
+      "query": [
+        [
+          "email",
+          "string",
+          true,
+          "Tài khoản"
+        ],
+        [
+          "source",
+          "string",
+          false,
+          "system | user"
+        ]
+      ],
+      "fields": [],
+      "source": "get-google-flow-voices",
+      "path_params": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/get-google-flow-voices"
+    },
+    {
+      "method": "GET",
+      "path": "/voices/{ref}",
+      "group": "voices",
+      "title": "Xem voice và URL nghe thử",
+      "path_params": [
+        [
+          "ref",
+          "Voice reference hoặc system voice, URL-encode"
+        ]
+      ],
+      "fields": [],
+      "source": "get-google-flow-voices-ref",
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/get-google-flow-voices-ref"
+    },
+    {
+      "method": "DELETE",
+      "path": "/voices/{ref}",
+      "group": "voices",
+      "title": "Xóa custom voice",
+      "path_params": [
+        [
+          "ref",
+          "Custom voice reference, URL-encode"
+        ]
+      ],
+      "fields": [],
+      "source": "delete-google-flow-voices-ref",
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/delete-google-flow-voices-ref"
+    },
+    {
+      "method": "POST",
+      "path": "/characters",
+      "group": "characters",
+      "title": "Tạo character tái sử dụng",
+      "fields": [
+        [
+          "displayName",
+          "string",
+          true,
+          "Tên hiển thị 1-200 ký tự"
+        ],
+        [
+          "imageReference_1",
+          "string",
+          true,
+          "Ảnh tham chiếu bắt buộc"
+        ],
+        [
+          "imageReference_2",
+          "string",
+          false,
+          "Ảnh thứ hai"
+        ],
+        [
+          "personalityNotes",
+          "string",
+          false,
+          "Ghi chú 0-2000 ký tự"
+        ],
+        [
+          "voice",
+          "string",
+          false,
+          "System voice hoặc custom voice ref"
+        ]
+      ],
+      "source": "post-google-flow-characters",
+      "path_params": [],
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/post-google-flow-characters"
+    },
+    {
+      "method": "GET",
+      "path": "/characters",
+      "group": "characters",
+      "title": "Liệt kê characters",
+      "query": [
+        [
+          "email",
+          "string",
+          true,
+          "Tài khoản"
+        ]
+      ],
+      "fields": [],
+      "source": "get-google-flow-characters",
+      "path_params": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/get-google-flow-characters"
+    },
+    {
+      "method": "GET",
+      "path": "/characters/{ref}",
+      "group": "characters",
+      "title": "Xem character, preview và voice",
+      "path_params": [
+        [
+          "ref",
+          "Character reference, URL-encode"
+        ]
+      ],
+      "fields": [],
+      "source": "get-google-flow-characters-ref",
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/get-google-flow-characters-ref"
+    },
+    {
+      "method": "DELETE",
+      "path": "/characters/{ref}",
+      "group": "characters",
+      "title": "Xóa character",
+      "path_params": [
+        [
+          "ref",
+          "Character reference, URL-encode"
+        ]
+      ],
+      "fields": [],
+      "source": "delete-google-flow-characters-ref",
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/delete-google-flow-characters-ref"
+    },
+    {
+      "method": "GET",
+      "path": "/jobs",
+      "group": "jobs",
+      "title": "Thống kê tải và tình trạng jobs",
+      "query": [
+        [
+          "options",
+          "string",
+          false,
+          "summary | executing | history"
+        ]
+      ],
+      "fields": [],
+      "source": "get-google-flow-jobs",
+      "path_params": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/get-google-flow-jobs"
+    },
+    {
+      "method": "GET",
+      "path": "/jobs/{jobId}",
+      "group": "jobs",
+      "title": "Lấy trạng thái job",
+      "path_params": [
+        [
+          "jobId",
+          "Job ID, URL-encode"
+        ]
+      ],
+      "fields": [],
+      "source": "get-google-flow-jobs-jobid",
+      "query": [],
+      "content_type": "json",
+      "source_url": "https://useapi.net/docs/api-google-flow-v1/get-google-flow-jobs-jobid"
+    }
+  ],
+  "models": {
+    "images": [
+      "imagen-4",
+      "nano-banana-2",
+      "nano-banana-pro"
+    ],
+    "videos": [
+      "veo-3.1-quality",
+      "veo-3.1-fast",
+      "veo-3.1-lite",
+      "veo-3.1-lite-low-priority",
+      "omni-flash"
+    ]
+  }
+}

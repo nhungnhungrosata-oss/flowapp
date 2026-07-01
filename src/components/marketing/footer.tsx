@@ -1,0 +1,2 @@
+import { Logo } from "@/components/ui/logo";
+export function Footer(){return <footer className="border-t border-white/8 py-10"><div className="mx-auto flex max-w-7xl flex-col gap-6 px-5 text-sm text-slate-400 md:flex-row md:items-center md:justify-between"><Logo/><p>© 2026 AdForge AI. Video bán hàng nhanh hơn, đẹp hơn.</p><div className="flex gap-5"><span>Điều khoản</span><span>Bảo mật</span><span>Hỗ trợ</span></div></div></footer>}

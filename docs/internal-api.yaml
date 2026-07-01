@@ -1,0 +1,48 @@
+openapi: 3.1.0
+info:
+  title: AdForge AI Internal API
+  version: 0.1.0
+servers:
+  - url: /api
+paths:
+  /projects:
+    get:
+      summary: List projects
+      responses: { '200': { description: OK } }
+    post:
+      summary: Create project
+      responses: { '201': { description: Created } }
+  /uploads/presign:
+    post:
+      summary: Create private upload URL
+      responses: { '201': { description: Created } }
+  /scripts/generate:
+    post:
+      summary: Generate sales script and caption
+      responses: { '200': { description: OK } }
+  /generations/composite:
+    post:
+      summary: Queue product composite image
+      responses: { '202': { description: Accepted } }
+  /generations/video:
+    post:
+      summary: Queue image-to-video generation
+      responses: { '202': { description: Accepted } }
+  /generations/{id}:
+    get:
+      summary: Read internal generation status
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses: { '200': { description: OK }, '404': { description: Not found } }
+  /webhooks/useapi/{secret}:
+    post:
+      summary: Receive useapi.net callback, then re-verify provider job
+      parameters:
+        - in: path
+          name: secret
+          required: true
+          schema: { type: string }
+      responses: { '200': { description: Accepted } }

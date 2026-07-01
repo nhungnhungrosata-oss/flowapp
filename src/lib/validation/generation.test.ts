@@ -1,0 +1,2 @@
+import { describe,expect,it } from "vitest";import { compositeSchema,videoSchema } from "./generation";
+describe("generation validation",()=>{it("accepts valid composite",()=>{expect(compositeSchema.parse({projectId:"p1",productAssetProviderId:"asset-1",characterRef:"char-1",scenePrompt:"A realistic product scene",idempotencyKey:"12345678"}).model).toBe("nano-banana-pro")});it("rejects unsupported video duration",()=>{expect(()=>videoSchema.parse({projectId:"p1",startImageProviderId:"x",prompt:"A useful long prompt",duration:30,idempotencyKey:"12345678"})).toThrow()})});
