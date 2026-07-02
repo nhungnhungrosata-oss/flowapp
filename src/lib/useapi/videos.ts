@@ -26,7 +26,7 @@ export async function generateVideo(input: GenerateVideoInput) {
       aspectRatio: input.aspectRatio,
       duration: input.duration,
       count: 1,
-      captchaRetry: 5,
+      captchaRetry: 10,
       ...(input.startImage ? { startImage: input.startImage.trim() } : {}),
       ...(input.characterRef ? { character_1: input.characterRef.trim() } : {}),
       ...(input.voiceRef ? { referenceAudio_1: input.voiceRef.trim() } : {}),
