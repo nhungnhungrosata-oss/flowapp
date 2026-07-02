@@ -3,7 +3,7 @@ import { sleep } from "@/lib/utils";
 import { UseApiError } from "@/lib/useapi/errors";
 
 const USEAPI_GOOGLE_FLOW_BASE_URL = "https://api.useapi.net/v1/google-flow";
-const RETRYABLE = new Set([408, 425, 429, 500, 502, 503, 504]);
+const RETRYABLE = new Set([408, 425, 429, 500, 502, 503, 504, 596]);
 
 type RequestOptions = {
   method?: "GET" | "POST" | "DELETE";
@@ -20,14 +20,6 @@ export async function useApiRequest<T>(path: string, options: RequestOptions = {
 
   if (!token) {
     throw new UseApiError(503, "USEAPI_NOT_CONFIGURED", "USEAPI_TOKEN chưa được cấu hình trên Vercel.");
-  }
-
-  if (!token.startsWith("user:")) {
-    throw new UseApiError(
-      503,
-      "USEAPI_TOKEN_FORMAT",
-      "USEAPI_TOKEN không đúng định dạng. Giá trị sau khi làm sạch phải bắt đầu bằng user: và không chứa tên biến hay chữ Bearer.",
-    );
   }
 
   const attempts = options.retrySafe === false ? 1 : 3;
@@ -66,9 +58,12 @@ export async function useApiRequest<T>(path: string, options: RequestOptions = {
       const data = text ? safeJson(text) : {};
 
       if (!response.ok) {
-        const code = extractCode(data);
-        const message = providerMessage(response.status, data);
-        const error = new UseApiError(response.status, code, message, data);
+        const error = new UseApiError(
+          response.status,
+          extractCode(data),
+          providerMessage(response.status, data),
+          data,
+        );
 
         if (!RETRYABLE.has(response.status) || attempt === attempts - 1) throw error;
         last = error;
@@ -81,7 +76,12 @@ export async function useApiRequest<T>(path: string, options: RequestOptions = {
 
       if (attempt === attempts - 1) {
         if (error instanceof UseApiError) throw error;
-        throw new UseApiError(504, "PROVIDER_TIMEOUT", "Dịch vụ AI phản hồi quá chậm. Vui lòng thử lại.", error);
+        throw new UseApiError(
+          504,
+          "PROVIDER_TIMEOUT",
+          "Dịch vụ useapi.net phản hồi quá chậm. Vui lòng thử lại.",
+          error,
+        );
       }
     } finally {
       clearTimeout(timer);
@@ -119,10 +119,11 @@ function extractCode(data: unknown): string {
   if (typeof error === "string" && error.trim()) return error.trim();
   if (error && typeof error === "object") {
     const nested = asRecord(error);
-    if (typeof nested.code === "string") return nested.code;
+    if (typeof nested.code === "string" || typeof nested.code === "number") return String(nested.code);
     if (typeof nested.type === "string") return nested.type;
+    if (typeof nested.status === "string") return nested.status;
   }
-  if (typeof record.code === "string") return record.code;
+  if (typeof record.code === "string" || typeof record.code === "number") return String(record.code);
   return "PROVIDER_ERROR";
 }
 
@@ -130,32 +131,38 @@ function providerMessage(status: number, data: unknown): string {
   const details = extractProviderText(data);
 
   if (status === 401) {
-    return "USEAPI_TOKEN bị useapi.net từ chối. Hãy tạo/copy lại API token trong useapi.net; giá trị token phải bắt đầu bằng user: và không thêm Bearer.";
+    return "API token bị useapi.net từ chối. Hãy copy lại chính xác API token từ trang Setup useapi.net; backend sẽ tự thêm tiền tố Bearer.";
   }
-  if (status === 403) return details || "Token useapi.net không có quyền sử dụng Google Flow API.";
+  if (status === 402) return details || "Subscription useapi.net đã hết hạn hoặc tài khoản không đủ credits.";
+  if (status === 403) return details || "Google từ chối captcha. Hãy kiểm tra captcha providers của tài khoản Flow.";
   if (status === 404) return details || "Không tìm thấy tài khoản Google Flow đã cấu hình. Hãy kiểm tra USEAPI_ACCOUNT_EMAIL.";
-  if (status === 402) return details || "Tài khoản useapi.net hoặc Google Flow chưa có gói hỗ trợ tạo video.";
-  if (status === 429) return details || "Không có tài khoản Flow đủ quota, tài khoản đang quarantine hoặc captcha credit đã hết.";
-  if (status >= 500) return details || "useapi.net đang gặp sự cố. Vui lòng thử lại sau.";
-  return details || `useapi.net từ chối yêu cầu tạo nội dung (HTTP ${status}).`;
+  if (status === 408) return details || "Quá thời gian chờ tạo video từ Google Flow.";
+  if (status === 429) return details || "Tài khoản Flow đang quá tải, thiếu quota hoặc captcha không đạt chất lượng.";
+  if (status === 596) return details || "useapi.net mất kết nối với Google Flow trong lúc xử lý.";
+  if (status >= 500) return details || "useapi.net hoặc Google Flow đang gặp sự cố. Vui lòng thử lại sau.";
+  return details || `useapi.net từ chối yêu cầu (HTTP ${status}).`;
 }
 
 function extractProviderText(data: unknown): string {
   const record = asRecord(data);
-  for (const key of ["message", "detail", "reason", "description"]) {
+  for (const key of ["message", "detail", "reason", "description", "errorDetails"]) {
     const value = record[key];
-    if (typeof value === "string" && value.trim()) return value.trim().slice(0, 300);
+    if (typeof value === "string" && value.trim()) return value.trim().slice(0, 400);
   }
 
   const error = record.error;
-  if (typeof error === "string" && error.trim()) return error.trim().slice(0, 300);
+  if (typeof error === "string" && error.trim()) return error.trim().slice(0, 400);
   if (error && typeof error === "object") {
     const nested = asRecord(error);
-    for (const key of ["message", "detail", "reason", "description"]) {
+    for (const key of ["message", "detail", "reason", "description", "status"]) {
       const value = nested[key];
-      if (typeof value === "string" && value.trim()) return value.trim().slice(0, 300);
+      if (typeof value === "string" && value.trim()) return value.trim().slice(0, 400);
     }
   }
+
+  const response = asRecord(record.response);
+  const responseError = asRecord(response.error);
+  if (typeof responseError.message === "string") return responseError.message.slice(0, 400);
 
   return "";
 }
