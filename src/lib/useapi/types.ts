@@ -1,14 +1,19 @@
 import { z } from "zod";
 
+const providerValue = z.union([z.string(), z.number(), z.null(), z.undefined()]).transform((value) => {
+  if (value === null || value === undefined) return undefined;
+  return String(value);
+});
+
 export const useApiJobSchema = z.object({
-  jobid: z.string().optional(),
-  jobId: z.string().optional(),
-  status: z.string().optional(),
+  jobid: providerValue,
+  jobId: providerValue,
+  status: providerValue,
   error: z.unknown().optional(),
-  videoUrl: z.string().optional(),
-  thumbnailUrl: z.string().optional(),
-  fifeUrl: z.string().optional(),
-  mediaGenerationId: z.string().optional()
+  videoUrl: providerValue,
+  thumbnailUrl: providerValue,
+  fifeUrl: providerValue,
+  mediaGenerationId: providerValue
 }).passthrough();
 
 export type UseApiJob = z.infer<typeof useApiJobSchema>;
