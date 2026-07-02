@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth";
-import { generateVideo, getProviderJob } from "@/lib/ai";
+import { assertFlowVideoReady, generateVideo, getProviderJob } from "@/lib/ai";
+import { UseApiError } from "@/lib/useapi/errors";
 
 export const runtime = "nodejs";
 
@@ -40,9 +41,11 @@ export async function POST(request: NextRequest) {
         providerStatus,
         videoUrl: result.videoUrl || result.fifeUrl || null,
         thumbnailUrl: result.thumbnailUrl || null,
-        error: result.error || null,
+        error: errorText(result.error),
       });
     }
+
+    await assertFlowVideoReady();
 
     const result = await generateVideo({
       prompt: input.prompt,
@@ -53,18 +56,39 @@ export async function POST(request: NextRequest) {
     });
 
     const jobId = result.jobid ?? result.jobId;
-    if (!jobId) throw new Error("useapi.net không trả về jobId.");
+    if (!jobId) throw new Error("useapi.net không trả về jobId cho yêu cầu async.");
 
     return NextResponse.json({
       jobId,
-      status: result.status || "queued",
+      status: result.status || "created",
       sceneId: input.sceneId,
     }, { status: 202 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.issues[0]?.message || "Dữ liệu không hợp lệ." }, { status: 400 });
     }
-    const message = error instanceof Error ? error.message : "Không thể xử lý yêu cầu tạo video.";
-    return NextResponse.json({ error: message }, { status: 500 });
+
+    if (error instanceof UseApiError) {
+      return NextResponse.json({ error: error.safeMessage, code: error.code }, { status: normalizeStatus(error.status) });
+    }
+
+    return NextResponse.json({
+      error: error instanceof Error ? error.message : "Không thể xử lý yêu cầu tạo video.",
+    }, { status: 500 });
   }
+}
+
+function errorText(value: unknown): string | null {
+  if (!value) return null;
+  if (typeof value === "string") return value;
+  if (typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    if (typeof record.message === "string") return record.message;
+    if (typeof record.error === "string") return record.error;
+  }
+  return "Video tạo thất bại tại nhà cung cấp.";
+}
+
+function normalizeStatus(status: number): number {
+  return status >= 400 && status <= 599 ? status : 500;
 }
