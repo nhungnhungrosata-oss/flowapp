@@ -2,6 +2,7 @@ import { env } from "@/lib/env";
 import { sleep } from "@/lib/utils";
 import { UseApiError } from "@/lib/useapi/errors";
 
+const USEAPI_GOOGLE_FLOW_BASE_URL = "https://api.useapi.net/v1/google-flow";
 const RETRYABLE = new Set([408, 425, 429, 500, 502, 503, 504]);
 
 type RequestOptions = { method?: "GET" | "POST" | "DELETE"; body?: unknown; rawBody?: BodyInit; contentType?: string; signal?: AbortSignal; retrySafe?: boolean };
@@ -21,7 +22,7 @@ export async function useApiRequest<T>(path: string, options: RequestOptions = {
       let body: BodyInit | undefined;
       if (options.rawBody) { body = options.rawBody; if (options.contentType) headers["Content-Type"] = options.contentType; }
       else if (options.body !== undefined) { headers["Content-Type"] = "application/json"; body = JSON.stringify(options.body); }
-      const response = await fetch(`${e.USEAPI_BASE_URL}${path}`, { method: options.method ?? "GET", headers, body, signal: controller.signal, cache: "no-store" });
+      const response = await fetch(`${USEAPI_GOOGLE_FLOW_BASE_URL}${path}`, { method: options.method ?? "GET", headers, body, signal: controller.signal, cache: "no-store" });
       const text = await response.text();
       const data = text ? safeJson(text) : {};
       if (!response.ok) {
