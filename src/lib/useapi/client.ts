@@ -13,6 +13,7 @@ type RequestOptions = {
   contentType?: string;
   signal?: AbortSignal;
   retrySafe?: boolean;
+  timeoutMs?: number;
 };
 
 export async function useApiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
@@ -24,11 +25,12 @@ export async function useApiRequest<T>(path: string, options: RequestOptions = {
   }
 
   const attempts = options.retrySafe === false ? 1 : 3;
+  const timeoutMs = options.timeoutMs ?? e.USEAPI_TIMEOUT_MS;
   let last: unknown;
 
   for (let attempt = 0; attempt < attempts; attempt++) {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), e.USEAPI_TIMEOUT_MS);
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
     const onAbort = () => controller.abort();
     options.signal?.addEventListener("abort", onAbort, { once: true });
 
@@ -77,10 +79,13 @@ export async function useApiRequest<T>(path: string, options: RequestOptions = {
 
       if (attempt === attempts - 1) {
         if (error instanceof UseApiError) throw error;
+        const timedOut = error instanceof Error && error.name === "AbortError";
         throw new UseApiError(
           504,
-          "PROVIDER_TIMEOUT",
-          "Dịch vụ useapi.net phản hồi quá chậm. Vui lòng thử lại.",
+          timedOut ? "PROVIDER_REQUEST_TIMEOUT" : "PROVIDER_TIMEOUT",
+          timedOut
+            ? `useapi.net chưa trả jobId sau ${Math.round(timeoutMs / 1000)} giây trong bước captcha. Không bấm tạo liên tục; chờ 60 giây rồi thử lại một lần.`
+            : "Không thể kết nối ổn định tới useapi.net. Vui lòng thử lại.",
           error,
         );
       }
