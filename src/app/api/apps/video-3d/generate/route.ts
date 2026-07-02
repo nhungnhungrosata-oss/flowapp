@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth";
-import { generateVideo } from "@/lib/useapi/videos";
-import { getProviderJob } from "@/lib/useapi/jobs";
+import { generateVideo, getProviderJob } from "@/lib/ai";
 
 export const runtime = "nodejs";
 
