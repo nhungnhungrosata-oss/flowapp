@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./video-3d.css";
 
 export const metadata: Metadata = {
   title: "AdForge AI — Hệ sinh thái ứng dụng AI cho bán hàng",
