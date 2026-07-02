@@ -19,10 +19,14 @@ export async function useApiRequest<T>(path: string, options: RequestOptions = {
   const token = normalizeUseApiToken(e.USEAPI_TOKEN);
 
   if (!token) {
+    throw new UseApiError(503, "USEAPI_NOT_CONFIGURED", "USEAPI_TOKEN chưa được cấu hình trên Vercel.");
+  }
+
+  if (!token.startsWith("user:")) {
     throw new UseApiError(
       503,
-      "USEAPI_NOT_CONFIGURED",
-      "USEAPI_TOKEN chưa được cấu hình trên Vercel.",
+      "USEAPI_TOKEN_FORMAT",
+      "USEAPI_TOKEN không đúng định dạng. Giá trị sau khi làm sạch phải bắt đầu bằng user: và không chứa tên biến hay chữ Bearer.",
     );
   }
 
@@ -66,9 +70,7 @@ export async function useApiRequest<T>(path: string, options: RequestOptions = {
         const message = providerMessage(response.status, data);
         const error = new UseApiError(response.status, code, message, data);
 
-        if (!RETRYABLE.has(response.status) || attempt === attempts - 1) {
-          throw error;
-        }
+        if (!RETRYABLE.has(response.status) || attempt === attempts - 1) throw error;
         last = error;
       } else {
         return data as T;
@@ -79,12 +81,7 @@ export async function useApiRequest<T>(path: string, options: RequestOptions = {
 
       if (attempt === attempts - 1) {
         if (error instanceof UseApiError) throw error;
-        throw new UseApiError(
-          504,
-          "PROVIDER_TIMEOUT",
-          "Dịch vụ AI phản hồi quá chậm. Vui lòng thử lại.",
-          error,
-        );
+        throw new UseApiError(504, "PROVIDER_TIMEOUT", "Dịch vụ AI phản hồi quá chậm. Vui lòng thử lại.", error);
       }
     } finally {
       clearTimeout(timer);
@@ -100,8 +97,10 @@ export async function useApiRequest<T>(path: string, options: RequestOptions = {
 function normalizeUseApiToken(raw: string): string {
   return raw
     .trim()
-    .replace(/^['"]|['"]$/g, "")
+    .replace(/^USEAPI_TOKEN\s*=\s*/i, "")
+    .replace(/^Authorization\s*:\s*/i, "")
     .replace(/^Bearer\s+/i, "")
+    .replace(/^['"]+|['"]+$/g, "")
     .trim();
 }
 
@@ -131,23 +130,13 @@ function providerMessage(status: number, data: unknown): string {
   const details = extractProviderText(data);
 
   if (status === 401) {
-    return "USEAPI_TOKEN bị useapi.net từ chối. Trong Vercel chỉ dán token dạng user:123-..., không thêm chữ Bearer, dấu nháy hoặc khoảng trắng.";
+    return "USEAPI_TOKEN bị useapi.net từ chối. Hãy tạo/copy lại API token trong useapi.net; giá trị token phải bắt đầu bằng user: và không thêm Bearer.";
   }
-  if (status === 403) {
-    return details || "Token useapi.net không có quyền sử dụng Google Flow API.";
-  }
-  if (status === 404) {
-    return details || "Không tìm thấy tài khoản Google Flow đã cấu hình. Hãy kiểm tra USEAPI_ACCOUNT_EMAIL.";
-  }
-  if (status === 402) {
-    return details || "Tài khoản useapi.net hoặc Google Flow chưa có gói hỗ trợ tạo video.";
-  }
-  if (status === 429) {
-    return details || "Không có tài khoản Flow đủ quota, tài khoản đang quarantine hoặc captcha credit đã hết.";
-  }
-  if (status >= 500) {
-    return details || "useapi.net đang gặp sự cố. Vui lòng thử lại sau.";
-  }
+  if (status === 403) return details || "Token useapi.net không có quyền sử dụng Google Flow API.";
+  if (status === 404) return details || "Không tìm thấy tài khoản Google Flow đã cấu hình. Hãy kiểm tra USEAPI_ACCOUNT_EMAIL.";
+  if (status === 402) return details || "Tài khoản useapi.net hoặc Google Flow chưa có gói hỗ trợ tạo video.";
+  if (status === 429) return details || "Không có tài khoản Flow đủ quota, tài khoản đang quarantine hoặc captcha credit đã hết.";
+  if (status >= 500) return details || "useapi.net đang gặp sự cố. Vui lòng thử lại sau.";
   return details || `useapi.net từ chối yêu cầu tạo nội dung (HTTP ${status}).`;
 }
 
