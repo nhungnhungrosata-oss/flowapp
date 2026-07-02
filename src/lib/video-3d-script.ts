@@ -26,10 +26,12 @@ export type GenerateVideo3DScriptInput = {
   provider: ScriptProvider;
 };
 
+type UnknownRecord = Record<string, unknown>;
+
 const SYSTEM_PROMPT = "Bạn là biên kịch và đạo diễn video 3D chuyên nghiệp. Luôn trả về một JSON object hợp lệ, không markdown và không giải thích thêm.";
 
 export async function generateVideo3DScript(input: GenerateVideo3DScriptInput): Promise<Video3DScript> {
-  const result = await generateJson<unknown>({
+  const raw = await generateJson<unknown>({
     provider: input.provider,
     systemPrompt: SYSTEM_PROMPT,
     userPrompt: buildPrompt(input),
@@ -37,11 +39,87 @@ export async function generateVideo3DScript(input: GenerateVideo3DScriptInput): 
     maxTokens: 4096,
   });
 
-  const script = video3DScriptSchema.parse(result);
-  if (script.scenes.length !== input.sceneCount) {
-    throw new Error(`AI trả về ${script.scenes.length} cảnh thay vì ${input.sceneCount} cảnh.`);
+  return video3DScriptSchema.parse(normalizeScript(raw, input));
+}
+
+function normalizeScript(raw: unknown, input: GenerateVideo3DScriptInput): Video3DScript {
+  const root = unwrapObject(raw);
+  const rawScenes = pickArray(root, ["scenes", "segments", "shots", "canh", "cảnh"]);
+  const topic = input.topic.trim();
+  const scenes = Array.from({ length: input.sceneCount }, (_, index) => {
+    const scene = asRecord(rawScenes[index]);
+    const number = index + 1;
+    const title = pickString(scene, ["title", "sceneTitle", "name", "tenCanh", "tieuDe", "tiêuĐề"])
+      || `Cảnh ${number}`;
+    const narration = pickString(scene, ["narration", "voiceover", "voiceOver", "dialogue", "script", "loiDan", "lờiDẫn", "text"])
+      || `Khám phá ${topic} trong cảnh số ${number}.`;
+    const visualPrompt = pickString(scene, ["visualPrompt", "videoPrompt", "prompt", "visual", "description", "moTaHinhAnh", "môTảHìnhẢnh"])
+      || buildFallbackVisualPrompt(topic, input.style, number);
+    const camera = pickString(scene, ["camera", "cameraMovement", "cameraMotion", "shot", "movement"])
+      || "Slow cinematic dolly-in with smooth parallax and stable framing";
+    const onScreenText = pickString(scene, ["onScreenText", "screenText", "textOverlay", "caption", "textOnScreen"])
+      || "";
+
+    return {
+      id: pickString(scene, ["id", "sceneId", "key"]) || `scene-${number}`,
+      title: truncate(title, 120),
+      narration: truncate(narration, 500),
+      visualPrompt: truncate(visualPrompt, 1800),
+      camera: truncate(camera, 300),
+      onScreenText: truncate(onScreenText, 120),
+    };
+  });
+
+  const title = pickString(root, ["title", "videoTitle", "name", "tieuDe", "tiêuĐề"])
+    || `Video 3D: ${topic}`;
+  const concept = pickString(root, ["concept", "idea", "summary", "description", "moTa", "môTả"])
+    || `Video hoạt hình 3D phong cách ${input.style.toLowerCase()} về ${topic}.`;
+
+  return {
+    title: truncate(title, 160),
+    concept: truncate(concept, 500),
+    scenes,
+  };
+}
+
+function unwrapObject(value: unknown): UnknownRecord {
+  const root = asRecord(value);
+  for (const key of ["script", "data", "result", "output"]) {
+    const nested = asRecord(root[key]);
+    if (Object.keys(nested).length > 0) return nested;
   }
-  return script;
+  return root;
+}
+
+function asRecord(value: unknown): UnknownRecord {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? value as UnknownRecord
+    : {};
+}
+
+function pickString(record: UnknownRecord, keys: string[]): string {
+  for (const key of keys) {
+    const value = record[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+    if (typeof value === "number" || typeof value === "boolean") return String(value);
+  }
+  return "";
+}
+
+function pickArray(record: UnknownRecord, keys: string[]): unknown[] {
+  for (const key of keys) {
+    const value = record[key];
+    if (Array.isArray(value)) return value;
+  }
+  return [];
+}
+
+function buildFallbackVisualPrompt(topic: string, style: string, sceneNumber: number): string {
+  return `Premium stylized 3D animation about ${topic}, scene ${sceneNumber}, ${style} mood, one consistent anthropomorphic character, expressive face, polished materials, cinematic lighting, clear action, smooth natural motion, detailed environment, family-friendly, no text, no logo, no watermark`;
+}
+
+function truncate(value: string, max: number): string {
+  return value.trim().slice(0, max);
 }
 
 function buildPrompt(input: GenerateVideo3DScriptInput) {
@@ -62,6 +140,7 @@ Yêu cầu sáng tạo:
 - narration ngắn gọn để đọc vừa trong 8 giây.
 - camera mô tả chuyển động máy quay riêng.
 - onScreenText tối đa 8 từ.
+- Tất cả trường JSON dưới đây đều bắt buộc.
 
 Trả về đúng cấu trúc JSON:
 {
