@@ -120,12 +120,17 @@ function extractCode(data: unknown): string {
 
 function providerMessage(status: number, data: unknown): string {
   const details = extractProviderText(data);
+  const normalized = details.toUpperCase();
+
+  if (normalized.includes("CAPTCHA_QUALITY") || normalized.includes("UNUSUAL_ACTIVITY")) {
+    return "Free captcha vẫn còn nhưng Google chấm token captcha quá thấp. Hệ thống đã thử tối đa 10 lần; hãy chờ ít nhất 60 giây rồi thử lại. Nếu lặp lại nhiều lần, cần thêm captcha provider dự phòng.";
+  }
 
   if (status === 401) {
     return "useapi.net trả về 401 Unauthorized. Backend đã gửi nguyên token theo header Authorization: Bearer {token}; hãy kiểm tra deployment hiện tại đã nhận đúng secret mới.";
   }
   if (status === 402) return details || "Subscription useapi.net đã hết hạn hoặc tài khoản không đủ credits.";
-  if (status === 403) return details || "Google từ chối captcha. Hãy kiểm tra captcha providers của tài khoản Flow.";
+  if (status === 403) return details || "Google từ chối captcha. Hãy chờ 60 giây rồi thử lại hoặc cấu hình thêm captcha provider.";
   if (status === 404) return details || "Không tìm thấy tài khoản Google Flow đã cấu hình. Hãy kiểm tra USEAPI_ACCOUNT_EMAIL.";
   if (status === 408) return details || "Quá thời gian chờ tạo video từ Google Flow.";
   if (status === 429) return details || "Tài khoản Flow đang quá tải, thiếu quota hoặc captcha không đạt chất lượng.";
