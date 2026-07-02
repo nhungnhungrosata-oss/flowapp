@@ -14,7 +14,7 @@ import { Logo } from "@/components/ui/logo";
 
 const nav = [
   { href: "/dashboard", label: "Tổng quan", icon: LayoutDashboard },
-  { href: "/apps", label: "Ứng dụng AI", icon: AppWindow },
+  { href: "/studio", label: "Ứng dụng AI", icon: AppWindow },
   { href: "/projects", label: "Dự án", icon: FolderKanban },
   { href: "/library", label: "Thư viện", icon: Boxes },
   { href: "/brand-kit", label: "Brand Kit", icon: Palette },
@@ -25,7 +25,7 @@ export function Sidebar() {
   return (
     <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-white/7 bg-[#080c15]/96 p-4 lg:block">
       <div className="px-2 py-2"><Logo /></div>
-      <Link href="/apps" className="btn-primary mt-6 w-full"><Sparkles size={17} /> Khám phá Apps</Link>
+      <Link href="/studio" className="btn-primary mt-6 w-full"><Sparkles size={17} /> Khám phá Apps</Link>
       <nav className="mt-6 space-y-1">
         {nav.map((item) => (
           <Link key={item.href} href={item.href} className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
