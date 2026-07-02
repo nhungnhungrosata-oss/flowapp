@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { generateJson, type TextAiProvider } from "@/lib/ai/text-generation";
+import { generateJson, type TextAiProvider } from "@/lib/ai";
 
 export const video3DSceneSchema = z.object({
   id: z.string().min(1).max(40),
