@@ -2,6 +2,8 @@ import { env } from "@/lib/env";
 import { useApiRequest } from "./client";
 import { useApiJobSchema, type VideoModel } from "./types";
 
+const VIDEO_SUBMIT_TIMEOUT_MS = 240_000;
+
 export type GenerateVideoInput = {
   prompt: string;
   model: VideoModel;
@@ -20,6 +22,7 @@ export async function generateVideo(input: GenerateVideoInput) {
   const response = await useApiRequest<unknown>("/videos", {
     method: "POST",
     retrySafe: false,
+    timeoutMs: VIDEO_SUBMIT_TIMEOUT_MS,
     body: {
       prompt: input.prompt.trim(),
       model: input.model,
