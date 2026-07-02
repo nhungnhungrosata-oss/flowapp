@@ -1,6 +1,7 @@
 import { env } from "@/lib/env";
 import { sleep } from "@/lib/utils";
 import { UseApiError } from "@/lib/useapi/errors";
+import { normalizeUseApiToken } from "@/lib/useapi/token";
 
 const USEAPI_GOOGLE_FLOW_BASE_URL = "https://api.useapi.net/v1/google-flow";
 const RETRYABLE = new Set([408, 425, 429, 500, 502, 503, 504, 596]);
@@ -94,16 +95,6 @@ export async function useApiRequest<T>(path: string, options: RequestOptions = {
   throw last;
 }
 
-function normalizeUseApiToken(raw: string): string {
-  return raw
-    .trim()
-    .replace(/^USEAPI_TOKEN\s*=\s*/i, "")
-    .replace(/^Authorization\s*:\s*/i, "")
-    .replace(/^Bearer\s+/i, "")
-    .replace(/^['"]+|['"]+$/g, "")
-    .trim();
-}
-
 function safeJson(text: string): unknown {
   try {
     return JSON.parse(text);
@@ -131,7 +122,7 @@ function providerMessage(status: number, data: unknown): string {
   const details = extractProviderText(data);
 
   if (status === 401) {
-    return "API token bị useapi.net từ chối. Hãy copy lại chính xác API token từ trang Setup useapi.net; backend sẽ tự thêm tiền tố Bearer.";
+    return "useapi.net trả về 401 Unauthorized. Backend đã gửi nguyên token theo header Authorization: Bearer {token}; hãy kiểm tra deployment hiện tại đã nhận đúng secret mới.";
   }
   if (status === 402) return details || "Subscription useapi.net đã hết hạn hoặc tài khoản không đủ credits.";
   if (status === 403) return details || "Google từ chối captcha. Hãy kiểm tra captcha providers của tài khoản Flow.";
