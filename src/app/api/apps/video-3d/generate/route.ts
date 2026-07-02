@@ -5,6 +5,7 @@ import { assertFlowVideoReady, generateVideo, getProviderJob } from "@/lib/ai";
 import { UseApiError } from "@/lib/useapi/errors";
 
 export const runtime = "nodejs";
+export const maxDuration = 280;
 
 const submitSchema = z.object({
   action: z.literal("submit"),
