@@ -2,11 +2,27 @@ import { env } from "@/lib/env";
 import { UseApiError } from "./errors";
 import { useApiRequest } from "./client";
 
+export type FlowVideoModel = {
+  key?: string;
+  displayName?: string;
+  creditCost?: number;
+  paygateTier?: string;
+  supportedAspectRatios?: string[];
+};
+
+export type CaptchaStatus = {
+  freeCaptchaCredits?: number;
+  providers: string[];
+  usingFreeCredits: boolean;
+};
+
 export type FlowAccountSummary = {
   health?: string;
   error?: string;
   credits?: { credits?: number; userPaygateTier?: string };
-  models?: { videoModels?: Array<Record<string, unknown>> };
+  models?: { videoModels?: FlowVideoModel[] };
+  recommendations?: string[];
+  captcha?: CaptchaStatus;
 };
 
 let cache: { key: string; expiresAt: number; value: FlowAccountSummary } | null = null;
@@ -43,8 +59,47 @@ export async function assertFlowVideoReady(): Promise<FlowAccountSummary> {
     );
   }
 
-  cache = { key: cacheKey, expiresAt: Date.now() + 30_000, value: account };
-  return account;
+  const videoModels = account.models?.videoModels ?? [];
+  if (videoModels.length === 0) {
+    throw new UseApiError(
+      402,
+      "FLOW_VIDEO_NOT_AVAILABLE",
+      "Tài khoản Google Flow hiện không có model video khả dụng. Hãy kiểm tra gói Google AI của tài khoản.",
+      account,
+    );
+  }
+
+  const captcha = await getCaptchaStatus();
+  if (!captcha.usingFreeCredits && captcha.providers.length === 0) {
+    throw new UseApiError(
+      402,
+      "CAPTCHA_NOT_AVAILABLE",
+      "Free captcha credits đã hết và chưa có captcha provider nào được cấu hình.",
+      captcha,
+    );
+  }
+
+  const ready = { ...account, captcha };
+  cache = { key: cacheKey, expiresAt: Date.now() + 30_000, value: ready };
+  return ready;
+}
+
+export async function getCaptchaStatus(): Promise<CaptchaStatus> {
+  const response = await useApiRequest<Record<string, unknown>>("/accounts/captcha-providers", {
+    method: "GET",
+    retrySafe: true,
+  });
+
+  const freeCaptchaCredits = numberValue(response.freeCaptchaCredits);
+  const providers = Object.entries(response)
+    .filter(([name, value]) => name !== "freeCaptchaCredits" && typeof value === "string" && value.length > 0)
+    .map(([name]) => name);
+
+  return {
+    freeCaptchaCredits,
+    providers,
+    usingFreeCredits: providers.length === 0 && typeof freeCaptchaCredits === "number" && freeCaptchaCredits > 0,
+  };
 }
 
 async function getSpecificAccount(email: string): Promise<FlowAccountSummary> {
@@ -71,7 +126,10 @@ async function getHealthyAccountFromPool(): Promise<FlowAccountSummary> {
   }
 
   const healthy = entries.find(([, account]) => String(account.health || "").toUpperCase() === "OK");
-  if (healthy) return healthy[1];
+  if (healthy) {
+    const [email] = healthy;
+    return getSpecificAccount(email);
+  }
 
   const [, first] = entries[0];
   throw new UseApiError(
@@ -85,4 +143,10 @@ async function getHealthyAccountFromPool(): Promise<FlowAccountSummary> {
 function normalizeEmail(raw: string): string {
   const value = raw.trim().replace(/^['"]+|['"]+$/g, "").trim();
   return value.includes("@") ? value : "";
+}
+
+function numberValue(value: unknown): number | undefined {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim() && Number.isFinite(Number(value))) return Number(value);
+  return undefined;
 }
