@@ -26,6 +26,7 @@ export async function generateVideo(input: GenerateVideoInput) {
       aspectRatio: input.aspectRatio,
       duration: input.duration,
       count: 1,
+      captchaRetry: 5,
       ...(input.startImage ? { startImage: input.startImage.trim() } : {}),
       ...(input.characterRef ? { character_1: input.characterRef.trim() } : {}),
       ...(input.voiceRef ? { referenceAudio_1: input.voiceRef.trim() } : {}),
@@ -40,10 +41,6 @@ export async function generateVideo(input: GenerateVideoInput) {
 }
 
 function normalizeAccountEmail(raw: string): string {
-  const value = raw
-    .trim()
-    .replace(/^['"]|['"]$/g, "")
-    .trim();
-
+  const value = raw.trim().replace(/^['"]+|['"]+$/g, "").trim();
   return value.includes("@") ? value : "";
 }
