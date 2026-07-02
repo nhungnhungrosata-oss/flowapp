@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { generateJson, type TextAiProvider } from "@/lib/ai/text-generation";
 
 export const video3DSceneSchema = z.object({
   id: z.string().min(1).max(40),
@@ -16,7 +17,7 @@ export const video3DScriptSchema = z.object({
 });
 
 export type Video3DScript = z.infer<typeof video3DScriptSchema>;
-export type ScriptProvider = "gemini" | "deepseek";
+export type ScriptProvider = TextAiProvider;
 
 export type GenerateVideo3DScriptInput = {
   topic: string;
@@ -25,19 +26,29 @@ export type GenerateVideo3DScriptInput = {
   provider: ScriptProvider;
 };
 
+const SYSTEM_PROMPT = "Bạn là biên kịch và đạo diễn video 3D chuyên nghiệp. Luôn trả về một JSON object hợp lệ, không markdown và không giải thích thêm.";
+
 export async function generateVideo3DScript(input: GenerateVideo3DScriptInput): Promise<Video3DScript> {
-  const prompt = buildPrompt(input);
-  const raw = input.provider === "gemini" ? await callGemini(prompt) : await callDeepSeek(prompt);
-  const script = video3DScriptSchema.parse(parseJson(raw));
-  if (script.scenes.length !== input.sceneCount) throw new Error(`AI trả về ${script.scenes.length} cảnh thay vì ${input.sceneCount} cảnh.`);
+  const result = await generateJson<unknown>({
+    provider: input.provider,
+    systemPrompt: SYSTEM_PROMPT,
+    userPrompt: buildPrompt(input),
+    temperature: 0.8,
+    maxTokens: 4096,
+  });
+
+  const script = video3DScriptSchema.parse(result);
+  if (script.scenes.length !== input.sceneCount) {
+    throw new Error(`AI trả về ${script.scenes.length} cảnh thay vì ${input.sceneCount} cảnh.`);
+  }
   return script;
 }
 
 function buildPrompt(input: GenerateVideo3DScriptInput) {
   const duration = input.sceneCount * 8;
-  return `Bạn là biên kịch và đạo diễn video hoạt hình 3D ngắn cho mạng xã hội.
+  return `Hãy viết kịch bản video hoạt hình 3D ngắn bằng tiếng Việt.
 
-Hãy viết kịch bản bằng tiếng Việt cho chủ đề: "${input.topic}".
+Chủ đề: "${input.topic}".
 Phong cách nội dung: ${input.style}.
 Số cảnh bắt buộc: ${input.sceneCount}.
 Mỗi cảnh đúng 8 giây, tổng thời lượng khoảng ${duration} giây.
@@ -52,7 +63,7 @@ Yêu cầu sáng tạo:
 - camera mô tả chuyển động máy quay riêng.
 - onScreenText tối đa 8 từ.
 
-Chỉ trả về JSON hợp lệ, không markdown, đúng cấu trúc:
+Trả về đúng cấu trúc JSON:
 {
   "title": "Tiêu đề video",
   "concept": "Mô tả ý tưởng tổng thể",
@@ -67,65 +78,4 @@ Chỉ trả về JSON hợp lệ, không markdown, đúng cấu trúc:
     }
   ]
 }`;
-}
-
-async function callGemini(prompt: string) {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) throw new Error("GEMINI_API_KEY chưa được cấu hình trên Vercel.");
-
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: "You return production-ready JSON scripts for short 3D animated videos. Never wrap JSON in markdown." }] },
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig: { responseMimeType: "application/json", temperature: 0.8, maxOutputTokens: 4096 },
-    }),
-    cache: "no-store",
-  });
-
-  const data = await response.json() as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>; error?: { message?: string } };
-  if (!response.ok) throw new Error(data.error?.message || `Gemini API lỗi ${response.status}.`);
-  const text = data.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("").trim();
-  if (!text) throw new Error("Gemini không trả về nội dung kịch bản.");
-  return text;
-}
-
-async function callDeepSeek(prompt: string) {
-  const apiKey = process.env.DEEPSEEK_API_KEY;
-  if (!apiKey) throw new Error("DEEPSEEK_API_KEY chưa được cấu hình trên Vercel.");
-
-  const response = await fetch("https://api.deepseek.com/chat/completions", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "deepseek-v4-flash",
-      messages: [
-        { role: "system", content: "Bạn là biên kịch video 3D. Luôn trả về một JSON object hợp lệ, không markdown và không giải thích thêm." },
-        { role: "user", content: prompt },
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.8,
-      max_tokens: 4096,
-      stream: false,
-    }),
-    cache: "no-store",
-  });
-
-  const data = await response.json() as { choices?: Array<{ message?: { content?: string } }>; error?: { message?: string } };
-  if (!response.ok) throw new Error(data.error?.message || `DeepSeek API lỗi ${response.status}.`);
-  const text = data.choices?.[0]?.message?.content?.trim();
-  if (!text) throw new Error("DeepSeek không trả về nội dung kịch bản.");
-  return text;
-}
-
-function parseJson(raw: string): unknown {
-  const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "");
-  try { return JSON.parse(cleaned); }
-  catch {
-    const first = cleaned.indexOf("{");
-    const last = cleaned.lastIndexOf("}");
-    if (first >= 0 && last > first) return JSON.parse(cleaned.slice(first, last + 1));
-    throw new Error("AI trả về JSON không hợp lệ. Vui lòng tạo lại kịch bản.");
-  }
 }
