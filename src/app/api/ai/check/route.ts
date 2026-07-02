@@ -22,7 +22,11 @@ export async function POST(request: NextRequest) {
         health: account.health || "OK",
         credits: account.credits?.credits ?? null,
         tier: account.credits?.userPaygateTier ?? null,
-        videoModels: account.models?.videoModels?.length ?? null,
+        videoModels: account.models?.videoModels?.length ?? 0,
+        freeCaptchaCredits: account.captcha?.freeCaptchaCredits ?? null,
+        captchaProviders: account.captcha?.providers ?? [],
+        usingFreeCaptcha: account.captcha?.usingFreeCredits ?? false,
+        recommendations: account.recommendations ?? [],
       });
     }
 
