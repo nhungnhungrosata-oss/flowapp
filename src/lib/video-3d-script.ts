@@ -94,15 +94,13 @@ async function callGemini(prompt: string) {
 
 async function callDeepSeek(prompt: string) {
   const apiKey = process.env.DEEPSEEK_API_KEY;
-  const baseUrl = process.env.DEEPSEEK_BASE_URL || "https://api.deepseek.com";
-  const model = process.env.DEEPSEEK_MODEL || "deepseek-v4-flash";
   if (!apiKey) throw new Error("DEEPSEEK_API_KEY chưa được cấu hình trên Vercel.");
 
-  const response = await fetch(`${baseUrl}/chat/completions`, {
+  const response = await fetch("https://api.deepseek.com/chat/completions", {
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      model,
+      model: "deepseek-v4-flash",
       messages: [
         { role: "system", content: "Bạn là biên kịch video 3D. Luôn trả về một JSON object hợp lệ, không markdown và không giải thích thêm." },
         { role: "user", content: prompt },
