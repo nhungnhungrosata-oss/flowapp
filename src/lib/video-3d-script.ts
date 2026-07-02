@@ -71,10 +71,9 @@ Chỉ trả về JSON hợp lệ, không markdown, đúng cấu trúc:
 
 async function callGemini(prompt: string) {
   const apiKey = process.env.GEMINI_API_KEY;
-  const model = process.env.GEMINI_MODEL || "gemini-3.5-flash";
   if (!apiKey) throw new Error("GEMINI_API_KEY chưa được cấu hình trên Vercel.");
 
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`, {
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
